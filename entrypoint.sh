@@ -17,11 +17,6 @@ if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
   exit 1
 fi
 
-if [ -z "$AWS_CF_ID" ]; then
-  echo "AWS_CF_ID is not set. Quitting."
-  exit 1
-fi
-
 # Default to us-east-1 if AWS_REGION not set.
 if [ -z "$AWS_REGION" ]; then
   AWS_REGION="us-east-1"
@@ -36,11 +31,10 @@ if [ -z "$GITHUB_SHA" ]; then
   GITHUB_SHA="none"
 fi
 
-timestamp=$(date +%s)
-
 # Append date to index.html
-APPEND="<!-- $GITHUB_SHA $timestamp -->"
-echo $APPEND >> index.html
+timestamp=$(date +%s)
+APPEND="\n\n<!-- $GITHUB_SHA $timestamp -->"
+echo $APPEND >> ${SOURCE_DIR:-.}/index.html
 
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
@@ -59,7 +53,9 @@ sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --no-progress \
               ${ENDPOINT_APPEND} $*"
               
-sh -c "aws cloudfront create-invalidation --distribution-id ${AWS_CF_ID} --paths \"/*\""
+if [ -z "$AWS_CF_ID" ]; then
+  sh -c "aws cloudfront create-invalidation --distribution-id ${AWS_CF_ID} --paths \"/*\""
+fi
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
