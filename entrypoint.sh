@@ -47,7 +47,7 @@ sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --no-progress \
               ${ENDPOINT_APPEND} $*"
               
-if [ -z "$AWS_CF_ID" ]; then
+if [ -n "$AWS_CF_ID" ]; then
   sh -c "aws cloudfront create-invalidation --distribution-id ${AWS_CF_ID} --paths \"/*\""
 fi
 
