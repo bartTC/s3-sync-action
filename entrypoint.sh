@@ -27,14 +27,8 @@ if [ -n "$AWS_S3_ENDPOINT" ]; then
   ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 fi
 
-if [ -z "$GITHUB_SHA" ]; then
-  GITHUB_SHA="none"
-fi
-
 # Append date to index.html
-timestamp=$(date +%s)
-APPEND="\n\n<!-- $GITHUB_SHA $timestamp -->"
-echo $APPEND >> ${SOURCE_DIR:-.}/index.html
+echo '\n<!-- '${GITHUB_SAHA:-none}' '$(date -u)' -->' >> ${SOURCE_DIR:-.}/index.html
 
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
