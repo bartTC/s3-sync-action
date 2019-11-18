@@ -28,7 +28,7 @@ if [ -n "$AWS_S3_ENDPOINT" ]; then
 fi
 
 # Append date to index.html
-echo '\n<!-- '${GITHUB_SAHA:-none}' '$(date -u)' -->' >> ${SOURCE_DIR:-.}/index.html
+echo $'\n<!-- Build: '${GITHUB_SHA:-[none]}' '$(date -u)' -->' >> ${SOURCE_DIR:-.}/index.html
 
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
