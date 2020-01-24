@@ -51,6 +51,20 @@ if [ -n "$AWS_CF_ID" ]; then
   sh -c "aws cloudfront create-invalidation --distribution-id ${AWS_CF_ID} --paths \"/*\""
 fi
 
+# Set far expire headers for static files
+if [ -n "$EXPIRE_HEADERS" ]; then
+  aws s3 cp s3://${AWS_S3_BUCKET}/ s3://${AWS_S3_BUCKET}/ --exclude "*" \
+    --include "*.css" \
+    --include "*.js" \
+    --include "*.svg" \
+    --include "*.png" \
+    --include "*.jpg" \
+    --include "*.webp" \
+    --include "*.woff2" \
+  --recursive --metadata-directive REPLACE --expires 2100-01-01T00:00:00Z --acl public-read \
+  --cache-control max-age=2592000,public
+fi
+
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
 # deleting ~/.aws in case there are other credentials living there.
